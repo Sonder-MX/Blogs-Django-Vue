@@ -2,9 +2,9 @@ from rest_framework import viewsets
 
 from .filters import ArticleFilter
 # from rest_framework.permissions import IsAdminUser
-from .models import Article
+from .models import Article, Category, Tag
 from .permissions import IsAdminUserOrReadOnly
-from .serializers import ArticleSerializer
+from .serializers import ArticleSerializer, CategorySerializer, CategoryDetailSerializer, TagSerializer
 
 
 # class ArticleList(generics.ListCreateAPIView):
@@ -32,3 +32,21 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    """分类视图集"""
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdminUserOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return CategorySerializer
+        return CategoryDetailSerializer
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [IsAdminUserOrReadOnly]
