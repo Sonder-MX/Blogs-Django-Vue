@@ -1,6 +1,6 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
 
 
 # 博客文章model
@@ -21,3 +21,4 @@ class Article(models.Model):
 
     class Meta:
         db_table = 'article'
+        ordering = ['-created']
