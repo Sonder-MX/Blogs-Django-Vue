@@ -51,3 +51,6 @@ venv.bak/
 
 # database migrations file
 migrations
+
+# media
+media/
