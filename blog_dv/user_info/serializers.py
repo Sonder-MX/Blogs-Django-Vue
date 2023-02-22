@@ -32,3 +32,17 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             password = validated_data.pop('password')
             instance.set_password(password)
         return super().update(instance, validated_data)
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'last_name',
+            'first_name',
+            'email',
+            'last_login',
+            'date_joined'
+        ]
