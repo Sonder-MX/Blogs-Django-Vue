@@ -4,7 +4,9 @@ from .filters import ArticleFilter
 # from rest_framework.permissions import IsAdminUser
 from .models import Article, Category, Tag
 from .permissions import IsAdminUserOrReadOnly
-from .serializers import ArticleSerializer, CategorySerializer, CategoryDetailSerializer, TagSerializer
+from .serializers import ArticleSerializer, ArticleDetailSerializer, \
+    CategorySerializer, CategoryDetailSerializer, \
+    TagSerializer
 
 
 # class ArticleList(generics.ListCreateAPIView):
@@ -32,6 +34,11 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ArticleSerializer
+        return ArticleDetailSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

@@ -52,8 +52,7 @@ class CategorySerializer(serializers.ModelSerializer):
         read_only_fields = ['created']
 
 
-class ArticleSerializer(serializers.HyperlinkedModelSerializer):
-    """博文序列化器"""
+class ArticleBaseSerializer(serializers.HyperlinkedModelSerializer):
     author = UserDescSerializer(read_only=True)
     # category 的嵌套序列化字段
     category = CategorySerializer(read_only=True)
@@ -84,6 +83,30 @@ class ArticleSerializer(serializers.HyperlinkedModelSerializer):
         if not Category.objects.filter(id=value).exists() and value is not None:
             raise serializers.ValidationError(f"Category with id {value} not exists.")
         return value
+
+
+class ArticleSerializer(ArticleBaseSerializer):
+    """博文序列化器"""
+
+    class Meta:
+        model = Article
+        fields = '__all__'
+        extra_kwargs = {'body': {'write_only': True}}
+
+
+class ArticleDetailSerializer(ArticleBaseSerializer):
+    # 渲染后的正文
+    body_html = serializers.SerializerMethodField()
+    # 渲染后的目录
+    toc_html = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_body_html(obj):
+        return obj.get_md()[0]
+
+    @staticmethod
+    def get_toc_html(obj):
+        return obj.get_md()[1]
 
     class Meta:
         model = Article
