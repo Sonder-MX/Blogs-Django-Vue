@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from comment.serializers import CommentSeriallizer
 from user_info.serializers import UserDescSerializer
 from .models import Article, Category, Tag, Avatar
 
@@ -116,6 +117,8 @@ class ArticleSerializer(ArticleBaseSerializer):
 
 
 class ArticleDetailSerializer(ArticleBaseSerializer):
+    id = serializers.IntegerField(read_only=True)
+    comment = CommentSeriallizer(many=True, read_only=True)
     # 渲染后的正文
     body_html = serializers.SerializerMethodField()
     # 渲染后的目录
