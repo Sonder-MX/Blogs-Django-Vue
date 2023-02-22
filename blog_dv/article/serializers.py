@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from user_info.serializers import UserDescSerializer
-from .models import Article, Category, Tag
+from .models import Article, Category, Tag, Avatar
 
 
 # class ArticleListSerializer(serializers.ModelSerializer):
@@ -39,6 +39,14 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Tag
+        fields = '__all__'
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='avatar-detail')
+
+    class Meta:
+        model = Avatar
         fields = '__all__'
 
 
@@ -82,6 +90,19 @@ class ArticleBaseSerializer(serializers.HyperlinkedModelSerializer):
     def validate_category_id(value):
         if not Category.objects.filter(id=value).exists() and value is not None:
             raise serializers.ValidationError(f"Category with id {value} not exists.")
+        return value
+
+    avatar = AvatarSerializer(read_only=True)
+    avatar_id = serializers.IntegerField(
+        write_only=True,
+        allow_null=True,
+        required=False
+    )
+
+    @staticmethod
+    def validate_avatar_id(value):
+        if not Avatar.objects.filter(id=value).exists() and value is not None:
+            raise serializers.ValidationError(f'Avatar with id {value} not exists!')
         return value
 
 

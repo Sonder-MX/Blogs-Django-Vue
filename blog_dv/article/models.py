@@ -29,8 +29,20 @@ class Tag(models.Model):
         ordering = ['-id']
 
 
+class Avatar(models.Model):
+    """标题图片"""
+    content = models.ImageField(upload_to='avatar/%Y%m%d')
+
+    class Meta:
+        db_table = 'avatar'
+
+
 class Article(models.Model):
     """博客 model"""
+    title = models.CharField(verbose_name='标题', max_length=100)
+    body = models.TextField(verbose_name='正文')
+    created = models.DateTimeField(verbose_name='创建时间', default=timezone.now)
+    updated = models.DateTimeField(verbose_name='更新时间', auto_now=True)
     tags = models.ManyToManyField(Tag, blank=True, related_name='articles')
     category = models.ForeignKey(
         Category,
@@ -45,10 +57,13 @@ class Article(models.Model):
         on_delete=models.CASCADE,
         related_name='articles'
     )
-    title = models.CharField(verbose_name='标题', max_length=100)
-    body = models.TextField(verbose_name='正文')
-    created = models.DateTimeField(verbose_name='创建时间', default=timezone.now)
-    updated = models.DateTimeField(verbose_name='更新时间', auto_now=True)
+    avatar = models.ForeignKey(
+        Avatar,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='article'
+    )
 
     def __str__(self):
         return self.title
