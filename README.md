@@ -8,4 +8,5 @@
 - django-cors-headers==3.13.0
 - markdown==3.4.1
 - django-filter==22.1
+- jangorestframework-simplejwt==5.2.2
 - vue/cli==5.0.8
