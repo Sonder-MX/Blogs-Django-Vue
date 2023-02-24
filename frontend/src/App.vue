@@ -1,15 +1,11 @@
 <template>
-  <BlogHeader />
-
-  <ArticleList />
-
-  <BlogFooter />
+  <router-view></router-view>
 </template>
 
 <script setup>
-import BlogHeader from "./components/BlogHeader.vue"
-import BlogFooter from "./components/BlogFooter.vue"
-import ArticleList from "./components/ArticleList.vue"
+// import BlogHeader from "./components/BlogHeader.vue"
+// import BlogFooter from "./components/BlogFooter.vue"
+// import ArticleList from "./components/ArticleList.vue"
 </script>
 
 <style>

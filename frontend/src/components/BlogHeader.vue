@@ -1,6 +1,15 @@
 <template>
   <div id="header">
-    <h1>My Drf-Vue Blog</h1>
+    <div class="grid">
+      <div></div>
+      <h1>My Drf-Vue Blog</h1>
+      <div class="search">
+        <form>
+          <input type="text" placeholder="输入搜索内容..." />
+          <button></button>
+        </form>
+      </div>
+    </div>
     <hr />
   </div>
 </template>
@@ -11,5 +20,66 @@
 #header {
   text-align: center;
   margin-top: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 4fr 1fr;
+}
+
+.search {
+  padding-top: 22px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+form {
+  position: relative;
+  width: 200px;
+  margin: 0 auto;
+}
+
+input,
+button {
+  border: none;
+  outline: none;
+}
+
+input {
+  width: 100%;
+  height: 35px;
+  padding-left: 13px;
+  padding-right: 46px;
+}
+
+button {
+  height: 35px;
+  width: 35px;
+  cursor: pointer;
+  position: absolute;
+}
+
+.search input {
+  border: 2px solid gray;
+  border-radius: 5px;
+  background: transparent;
+  top: 0;
+  right: 0;
+}
+
+.search button {
+  background: gray;
+  border-radius: 0 5px 5px 0;
+  width: 45px;
+  top: 0;
+  right: 0;
+}
+
+.search button:before {
+  content: "搜索";
+  font-size: 13px;
+  color: white;
 }
 </style>
