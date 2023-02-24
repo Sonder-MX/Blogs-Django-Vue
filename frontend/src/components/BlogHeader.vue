@@ -5,8 +5,10 @@
       <h1>My Drf-Vue Blog</h1>
       <div class="search">
         <form>
-          <input type="text" placeholder="输入搜索内容..." />
-          <button></button>
+          <label>
+            <input type="text" v-model="searchText" placeholder="输入搜索内容..." />
+          </label>
+          <button type="button" @click.prevent="searchArticle"></button>
         </form>
       </div>
     </div>
@@ -14,7 +16,19 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+let searchText = ref("")
+
+function searchArticle() {
+  if (searchText.value.trim()) {
+    router.push({ name: "Home", query: { search: searchText.value.trim() } })
+  }
+}
+</script>
 
 <style scoped>
 #header {

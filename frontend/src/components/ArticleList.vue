@@ -13,17 +13,13 @@
 
   <div id="paginator">
     <span v-show="is_page_exists('previous')">
-      <router-link :to="{ name: 'Home', query: { page: get_page_param('previous') } }">
-        Prev
-      </router-link>
+      <router-link :to="get_path('previous')"> Prev </router-link>
     </span>
     <span class="current-page">
       {{ get_page_param("current") }}
     </span>
     <span v-show="is_page_exists('next')">
-      <router-link :to="{ name: 'Home', query: { page: get_page_param('next') } }">
-        Next
-      </router-link>
+      <router-link :to="get_path('next')"> Next </router-link>
     </span>
   </div>
 </template>
@@ -44,9 +40,15 @@ onMounted(() => get_article_data())
 // 获取文章列表数据
 function get_article_data() {
   let url = "/article"
-  const page = Number(route.query.page)
-  if (!isNaN(page) && page !== 0) {
-    url = url + "/?page=" + page
+  let params = new URLSearchParams()
+  // appendIfExists 方法是原生没有的
+  // 原生只有 append 方法，但此方法不能判断值是否存在
+  params.appendIfExists("page", route.query.page)
+  params.appendIfExists("search", route.query.search)
+
+  const paramsString = params.toString()
+  if (paramsString.charAt(0) !== "") {
+    url += "/?" + paramsString
   }
   reqArticleListOrDetail(url)
     .then((resp) => {
@@ -88,6 +90,27 @@ function get_page_param(direction) {
   } catch (err) {
     console.log(err)
   }
+}
+
+function get_path(direction) {
+  let url = ""
+  try {
+    switch (direction) {
+      case "next":
+        if (articleInfo.data.next !== undefined) {
+          url += new URL(articleInfo.data.next).search
+        }
+        break
+      case "previous":
+        if (articleInfo.data.previous !== undefined) {
+          url += new URL(articleInfo.data.previous).search
+        }
+        break
+    }
+  } catch {
+    return url
+  }
+  return url
 }
 
 // 监听
