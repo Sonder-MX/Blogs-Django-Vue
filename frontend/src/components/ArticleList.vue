@@ -44,12 +44,13 @@ function get_article_data() {
   // appendIfExists 方法是原生没有的
   // 原生只有 append 方法，但此方法不能判断值是否存在
   params.appendIfExists("page", route.query.page)
-  params.appendIfExists("search", route.query.search)
+  params.appendIfExists("title", route.query.title)
 
   const paramsString = params.toString()
   if (paramsString.charAt(0) !== "") {
     url += "/?" + paramsString
   }
+  console.log(url)
   reqArticleListOrDetail(url)
     .then((resp) => {
       articleInfo.data = resp

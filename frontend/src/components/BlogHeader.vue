@@ -25,7 +25,7 @@ let searchText = ref("")
 
 function searchArticle() {
   if (searchText.value.trim()) {
-    router.push({ name: "Home", query: { search: searchText.value.trim() } })
+    router.push({ name: "Home", query: { title: searchText.value.trim() } })
   }
 }
 </script>
