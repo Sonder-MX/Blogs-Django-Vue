@@ -13,6 +13,9 @@
       </div>
     </div>
     <hr />
+    <div class="login">
+      <router-link to="/login" class="login-link">登录</router-link>
+    </div>
   </div>
 </template>
 
@@ -95,5 +98,14 @@ button {
   content: "搜索";
   font-size: 13px;
   color: white;
+}
+
+.login-link {
+  color: black;
+}
+
+.login {
+  text-align: right;
+  padding-right: 5px;
 }
 </style>

@@ -50,7 +50,6 @@ function get_article_data() {
   if (paramsString.charAt(0) !== "") {
     url += "/?" + paramsString
   }
-  console.log(url)
   reqArticleListOrDetail(url)
     .then((resp) => {
       articleInfo.data = resp
