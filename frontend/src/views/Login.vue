@@ -95,7 +95,7 @@ function signup() {
 }
 
 function signin() {
-  sendPostReq("/token", { username: signinName.value, password: signinPwd.value })
+  sendPostReq("/token/", { username: signinName.value, password: signinPwd.value })
     .then((res) => {
       // 使用localStorage存储token
       const storage = localStorage

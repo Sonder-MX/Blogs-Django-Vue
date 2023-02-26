@@ -2,19 +2,24 @@
   <div id="header">
     <div class="grid">
       <div></div>
-      <h1>My Drf-Vue Blog</h1>
-      <div class="search">
-        <form>
-          <label>
-            <input type="text" v-model="searchText" placeholder="输入搜索内容..." />
-          </label>
-          <button type="button" @click.prevent="searchArticle"></button>
-        </form>
-      </div>
+      <h1 class="main-title">
+        <router-link :to="{ name: 'Home' }">My Drf-Vue Blog</router-link>
+      </h1>
+      <SearchBox></SearchBox>
     </div>
     <hr />
     <div class="login">
-      <div v-if="userName">欢迎你~{{ userName }}</div>
+      <!-- <div v-if="userName">欢迎你~{{ userName }}</div> -->
+      <div v-if="hasLogin">
+        <div class="dropdown">
+          <button class="dropbtn">欢迎, {{ userName }}!</button>
+          <div class="dropdown-content">
+            <router-link :to="{ name: 'UserCenter', params: { username: userName } }">
+              用户中心
+            </router-link>
+          </div>
+        </div>
+      </div>
       <div v-else>
         <router-link to="/login" class="login-link">注册/登录</router-link>
       </div>
@@ -23,48 +28,91 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import { sendPostReq } from "@/http"
+import SearchBox from "./SearchBox.vue"
 
-const router = useRouter()
-let searchText = ref("")
+import { ref, onMounted } from "vue"
+import authorization from "@/utils/authorization"
+
 let userName = ref("")
+let hasLogin = ref(false)
 
 onMounted(() => {
-  const storage = localStorage
-  const expireTime = Number(storage.getItem("expiredTime.myblog")) // 过期时间
-  const refreshToken = storage.getItem("refresh.myblog") // 刷新令牌
-  // token未过期
-  if (expireTime > Date.now()) {
-    userName.value = storage.getItem("username.myblog")
-  } else if (refreshToken) {
-    // 有刷新令牌，重新申请令牌
-    sendPostReq("/token/refresh", { refresh: refreshToken })
-      .then((res) => {
-        const nextExpiredTime = Date.now() + 60000
-        storage.setItem("access.myblog", res.data.access)
-        storage.setItem("expiredTime.myblog", nextExpiredTime)
-        storage.removeItem("refresh.myblog")
-        userName.value = storage.getItem("username.myblog")
-      })
-      .catch(() => {
-        storage.clear()
-        userName.value = ""
-      })
-  } else {
-    // 无效token
-    storage.clear()
-    userName.value = ""
-  }
+  authorization().then((data) => ([hasLogin.value, userName.value] = data))
+  // const storage = localStorage
+  // const expireTime = Number(storage.getItem("expiredTime.myblog")) // 过期时间
+  // const refreshToken = storage.getItem("refresh.myblog") // 刷新令牌
+  // // token未过期
+  // if (expireTime > Date.now()) {
+  //   userName.value = storage.getItem("username.myblog")
+  // } else if (refreshToken) {
+  //   // 有刷新令牌，重新申请令牌
+  //   sendPostReq("/token/refresh", { refresh: refreshToken })
+  //     .then((res) => {
+  //       const nextExpiredTime = Date.now() + 60000
+  //       storage.setItem("access.myblog", res.data.access)
+  //       storage.setItem("expiredTime.myblog", nextExpiredTime)
+  //       storage.removeItem("refresh.myblog")
+  //       userName.value = storage.getItem("username.myblog")
+  //     })
+  //     .catch(() => {
+  //       storage.clear()
+  //       userName.value = ""
+  //     })
+  // } else {
+  //   // 无效token
+  //   storage.clear()
+  //   userName.value = ""
+  // }
 })
-
-function searchArticle() {
-  if (searchText.value.trim()) {
-    router.push({ name: "Home", query: { title: searchText.value.trim() } })
-  }
-}
 </script>
+
+<style scoped>
+/* 样式来源: https://www.runoob.com/css/css-dropdowns.html* /
+    /* 下拉按钮样式 */
+.dropbtn {
+  background-color: mediumslateblue;
+  color: white;
+  padding: 8px 8px 30px 8px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  height: 16px;
+  border-radius: 5px;
+}
+/* 容器 <div> - 需要定位下拉内容 */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+/* 下拉内容 (默认隐藏) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 120px;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+/* 下拉菜单的链接 */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+/* 鼠标移上去后修改下拉菜单链接颜色 */
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+/* 在鼠标移上去后显示下拉菜单 */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+/* 当下拉内容显示后修改下拉按钮的背景颜色 */
+.dropdown:hover .dropbtn {
+  background-color: darkslateblue;
+}
+</style>
 
 <style scoped>
 #header {
@@ -72,65 +120,14 @@ function searchArticle() {
   margin-top: 20px;
 }
 
+.main-title a {
+  color: black;
+  text-decoration: none;
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr 4fr 1fr;
-}
-
-.search {
-  padding-top: 22px;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-form {
-  position: relative;
-  width: 200px;
-  margin: 0 auto;
-}
-
-input,
-button {
-  border: none;
-  outline: none;
-}
-
-input {
-  width: 100%;
-  height: 35px;
-  padding-left: 13px;
-  padding-right: 46px;
-}
-
-button {
-  height: 35px;
-  width: 35px;
-  cursor: pointer;
-  position: absolute;
-}
-
-.search input {
-  border: 2px solid gray;
-  border-radius: 5px;
-  background: transparent;
-  top: 0;
-  right: 0;
-}
-
-.search button {
-  background: gray;
-  border-radius: 0 5px 5px 0;
-  width: 45px;
-  top: 0;
-  right: 0;
-}
-
-.search button:before {
-  content: "搜索";
-  font-size: 13px;
-  color: white;
 }
 
 .login-link {
