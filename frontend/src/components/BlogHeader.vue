@@ -14,17 +14,50 @@
     </div>
     <hr />
     <div class="login">
-      <router-link to="/login" class="login-link">登录</router-link>
+      <div v-if="userName">欢迎你~{{ userName }}</div>
+      <div v-else>
+        <router-link to="/login" class="login-link">注册/登录</router-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
+import { sendPostReq } from "@/http"
 
 const router = useRouter()
 let searchText = ref("")
+let userName = ref("")
+
+onMounted(() => {
+  const storage = localStorage
+  const expireTime = Number(storage.getItem("expiredTime.myblog")) // 过期时间
+  const refreshToken = storage.getItem("refresh.myblog") // 刷新令牌
+  // token未过期
+  if (expireTime > Date.now()) {
+    userName.value = storage.getItem("username.myblog")
+  } else if (refreshToken) {
+    // 有刷新令牌，重新申请令牌
+    sendPostReq("/token/refresh", { refresh: refreshToken })
+      .then((res) => {
+        const nextExpiredTime = Date.now() + 60000
+        storage.setItem("access.myblog", res.data.access)
+        storage.setItem("expiredTime.myblog", nextExpiredTime)
+        storage.removeItem("refresh.myblog")
+        userName.value = storage.getItem("username.myblog")
+      })
+      .catch(() => {
+        storage.clear()
+        userName.value = ""
+      })
+  } else {
+    // 无效token
+    storage.clear()
+    userName.value = ""
+  }
+})
 
 function searchArticle() {
   if (searchText.value.trim()) {
