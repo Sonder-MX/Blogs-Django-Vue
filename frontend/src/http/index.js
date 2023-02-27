@@ -14,3 +14,7 @@ export const sendPostReq = async (surl, payload) => {
 export const sendPatchReq = async (surl, payload, config_obj) => {
   return await axios.patch(tagUrl + surl, payload, config_obj)
 }
+
+export const sendDeleteReq = async (surl, config_obj) => {
+  return await axios.delete(tagUrl + surl, config_obj)
+}

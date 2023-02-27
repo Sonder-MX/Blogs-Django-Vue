@@ -1,5 +1,5 @@
 <template>
-  <BlogHeader />
+  <BlogHeader :welcomeName="welcomeName" />
   <div id="user-center">
     <h3>更新资料信息</h3>
     <form>
@@ -16,6 +16,10 @@
       <div class="form-elem">
         <button v-on:click.prevent="changeInfo">更新</button>
       </div>
+
+      <div class="form-elem">
+        <button class="btn-danger" v-on:click.prevent="deleteUser">注销用户</button>
+      </div>
     </form>
   </div>
   <BlogFooter />
@@ -26,8 +30,8 @@ import BlogHeader from "@/components/BlogHeader.vue"
 import BlogFooter from "@/components/BlogFooter.vue"
 
 import authorization from "@/utils/authorization"
-import { sendPatchReq } from "@/http"
-import { reactive, onMounted } from "vue"
+import { sendPatchReq, sendDeleteReq } from "@/http"
+import { ref, reactive, onMounted } from "vue"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
@@ -37,10 +41,7 @@ let userData = reactive({
   password: "",
   token: "",
 })
-
-onMounted(() => {
-  userData.username = storage.getItem("username.myblog")
-})
+let welcomeName = ref("")
 
 function changeInfo() {
   // 验证登录状态
@@ -69,11 +70,32 @@ function changeInfo() {
       ).then((resp) => {
         const uname = resp.data.username
         storage.setItem("username.myblog", uname)
+        welcomeName.value = storage.getItem("username.myblog")
         router.push({ name: "UserCenter", params: { username: uname } })
       })
     }
   })
 }
+
+function deleteUser() {
+  if (confirm("确定要删除用户吗？")) {
+    authorization().then((res) => {
+      if (res[0]) {
+        userData.token = storage.getItem("access.myblog")
+        sendDeleteReq("/user/" + userData.username + "/", {
+          headers: { Authorization: "Bearer " + userData.token },
+        }).then(() => {
+          storage.clear()
+          router.push({ name: "Home" })
+        })
+      }
+    })
+  }
+}
+
+onMounted(() => {
+  userData.username = storage.getItem("username.myblog")
+})
 </script>
 
 <style scoped>
@@ -96,5 +118,9 @@ button {
   color: whitesmoke;
   border-radius: 5px;
   width: 200px;
+}
+
+.btn-danger {
+  background-color: rgb(246, 65, 65);
 }
 </style>

@@ -9,10 +9,9 @@
     </div>
     <hr />
     <div class="login">
-      <!-- <div v-if="userName">欢迎你~{{ userName }}</div> -->
       <div v-if="hasLogin">
         <div class="dropdown">
-          <button class="dropbtn">欢迎, {{ userName }}!</button>
+          <button class="dropbtn">欢迎, {{ uname }} !</button>
           <div class="dropdown-content">
             <router-link :to="{ name: 'UserCenter', params: { username: userName } }">
               用户中心
@@ -30,39 +29,23 @@
 <script setup>
 import SearchBox from "./SearchBox.vue"
 
-import { ref, onMounted } from "vue"
+import { ref, onMounted, defineProps, computed } from "vue"
 import authorization from "@/utils/authorization"
 
 let userName = ref("")
 let hasLogin = ref(false)
+const props = defineProps(["welcomeName"])
+
+const uname = computed(() => {
+  return props.welcomeName ? props.welcomeName : userName.value
+})
+
+if (hasLogin) {
+  userName.value = localStorage.getItem("username.myblog")
+}
 
 onMounted(() => {
   authorization().then((data) => ([hasLogin.value, userName.value] = data))
-  // const storage = localStorage
-  // const expireTime = Number(storage.getItem("expiredTime.myblog")) // 过期时间
-  // const refreshToken = storage.getItem("refresh.myblog") // 刷新令牌
-  // // token未过期
-  // if (expireTime > Date.now()) {
-  //   userName.value = storage.getItem("username.myblog")
-  // } else if (refreshToken) {
-  //   // 有刷新令牌，重新申请令牌
-  //   sendPostReq("/token/refresh", { refresh: refreshToken })
-  //     .then((res) => {
-  //       const nextExpiredTime = Date.now() + 60000
-  //       storage.setItem("access.myblog", res.data.access)
-  //       storage.setItem("expiredTime.myblog", nextExpiredTime)
-  //       storage.removeItem("refresh.myblog")
-  //       userName.value = storage.getItem("username.myblog")
-  //     })
-  //     .catch(() => {
-  //       storage.clear()
-  //       userName.value = ""
-  //     })
-  // } else {
-  //   // 无效token
-  //   storage.clear()
-  //   userName.value = ""
-  // }
 })
 </script>
 
