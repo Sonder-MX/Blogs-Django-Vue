@@ -1,4 +1,4 @@
-# 个人博客(Django+Vue)
+# 个人博客(Django+Vue) (开发 ing)
 
 ## 准备
 
