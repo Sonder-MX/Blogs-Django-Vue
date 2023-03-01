@@ -14,11 +14,15 @@
       </div>
 
       <div class="form-elem">
-        <button v-on:click.prevent="changeInfo">更新</button>
+        <button @click.prevent="changeInfo">更新信息</button>
       </div>
 
       <div class="form-elem">
-        <button class="btn-danger" v-on:click.prevent="deleteUser">注销用户</button>
+        <button class="btn-warning" @click.prevent="logout">退出登录</button>
+      </div>
+
+      <div class="form-elem">
+        <button class="btn-danger" @click.prevent="deleteUser">注销用户</button>
       </div>
     </form>
   </div>
@@ -77,6 +81,13 @@ function changeInfo() {
   })
 }
 
+function logout() {
+  if (confirm("确定要退出吗?")) {
+    storage.clear()
+    router.push({ name: "Home" })
+  }
+}
+
 function deleteUser() {
   if (confirm("确定要删除用户吗？")) {
     authorization().then((res) => {
@@ -118,6 +129,10 @@ button {
   color: whitesmoke;
   border-radius: 5px;
   width: 200px;
+}
+
+.btn-warning {
+  background-color: rgb(225, 188, 76);
 }
 
 .btn-danger {
