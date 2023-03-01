@@ -18,7 +18,7 @@ async function authorization() {
     try {
       let response = sendPostReq("/token/refresh/", { refresh: refreshToken })
 
-      const nextExpiredTime = Date.now() + 60000
+      const nextExpiredTime = Date.now() + 60000 * 60
       storage.setItem("access.myblog", response.data.access)
       storage.setItem("expiredTime.myblog", nextExpiredTime)
       storage.removeItem("refresh.myblog")

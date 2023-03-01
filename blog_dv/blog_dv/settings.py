@@ -73,7 +73,8 @@ CORS_ORIGIN_WHITELIST = [
 
 # Token 有效期
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
+    # token 过期时间 1h
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
 }
 

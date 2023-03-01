@@ -100,8 +100,8 @@ function signin() {
       // 使用localStorage存储token
       const storage = localStorage
       // Date.parse(...) 返回1970年1月1日UTC以来的毫秒数
-      // Token 被设置为1分钟，因此这里加上60000毫秒
-      const expiredTime = Date.now() + 60000
+      // Token 被设置为1h，因此这里加上60000 * 60毫秒
+      const expiredTime = Date.now() + 60000 * 60
       storage.setItem("access.myblog", res.data.access)
       storage.setItem("refresh.myblog", res.data.refresh)
       storage.setItem("expiredTime.myblog", expiredTime)
