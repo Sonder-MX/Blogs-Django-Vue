@@ -6,6 +6,11 @@
       <h1 id="title">{{ article.title }}</h1>
       <p id="subtitle">
         本文由 {{ article.author.username }} 发布于 {{ formatted_time(article.created) }}
+        <span v-show="isSuperUser">
+          <router-link :to="{ name: 'ArticleEdit', params: { id: article.id } }">
+            更新与删除
+          </router-link>
+        </span>
       </p>
       <div v-html="article.body_html" class="article-body"></div>
     </div>
@@ -23,11 +28,15 @@ import BlogHeader from "@/components/BlogHeader.vue"
 import BlogFooter from "@/components/BlogFooter.vue"
 
 import { sendGetReq } from "@/http"
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
 let article = ref(null)
+
+const isSuperUser = computed(() => {
+  return localStorage.getItem("isSuperuser.myblog") === "true"
+})
 
 onMounted(() => {
   sendGetReq("/article/" + route.params.id)

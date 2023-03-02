@@ -2,7 +2,7 @@
   <BlogHeader />
 
   <div id="article-create">
-    <h3>发表文章</h3>
+    <h3>更新文章</h3>
     <form>
       <div class="form-elem">
         <span>标题：</span>
@@ -14,7 +14,6 @@
         <span v-for="category in article.categories" :key="category.id">
           <!--样式也可以通过 :style 绑定-->
           <button
-            type="button"
             class="category-btn"
             :style="categoryStyle(category)"
             @click.prevent="chooseCategory(category)">
@@ -30,15 +29,19 @@
 
       <div class="form-elem">
         <span>正文：</span>
-        <textarea v-model="article.body_cont" placeholder="输入正文" rows="20" cols="80"></textarea>
+        <textarea v-model="article.body" placeholder="输入正文" rows="20" cols="80"></textarea>
       </div>
 
       <div class="form-elem">
         <button v-on:click.prevent="submit">提交</button>
       </div>
+      <div class="form-elem">
+        <button v-on:click.prevent="deleteArticle" style="background-color: rgb(241, 148, 148)">
+          删除
+        </button>
+      </div>
     </form>
   </div>
-
   <BlogFooter />
 </template>
 
@@ -47,89 +50,103 @@ import BlogHeader from "@/components/BlogHeader.vue"
 import BlogFooter from "@/components/BlogFooter.vue"
 
 import { reactive, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import { sendGetReq, sendPostReq } from "@/http"
+import { useRoute, useRouter } from "vue-router"
+import { sendGetReq, sendPutReq, sendDeleteReq } from "@/http"
+import axios from "axios"
 import authorization from "@/utils/authorization"
 
+const route = useRoute()
 const router = useRouter()
 let article = reactive({
   title: "",
-  tags: "",
-  body_cont: "",
+  body: "",
   categories: [],
-  selectCategorie: null,
+  selectedCategory: null,
+  tags: "",
+  // Article id
+  articleID: null,
 })
-
 onMounted(() => {
-  sendGetReq("/category/").then((resData) => {
-    article.categories = resData
+  // 页面初始化时获取所有分类
+  sendGetReq("/category/").then((resp) => (article.categories = resp))
+  //
+  sendGetReq("/article/" + route.params.id + "/").then((resp) => {
+    article.title = resp.title
+    article.body = resp.body
+    article.selectedCategory = resp.category
+    article.tags = resp.tags.join(",")
+    article.articleID = resp.id
   })
 })
 
-function categoryStyle(catego) {
-  if (article.selectCategorie !== null && catego.id === article.selectCategorie.id) {
+// 根据分类是否被选中，按钮的颜色发生变化
+function categoryStyle(category) {
+  if (article.selectedCategory !== null && category.id === article.selectedCategory.id) {
     return { backgroundColor: "rgb(61, 179, 242)" }
   }
   return { backgroundColor: "rgb(214, 216, 219)" }
 }
 
+// 选取分类
 function chooseCategory(catego) {
-  // 如果点击已选取的分类，则将 article.selectCategorie 置空
-  if (article.selectCategorie !== null && article.selectCategorie.id === catego.id) {
-    article.selectCategorie = null
-  }
-  // 如果没选中当前分类，则选中它
-  else {
-    article.selectCategorie = catego
+  if (article.selectedCategory !== null && article.selectedCategory.id === catego.id) {
+    article.selectedCategory = null
+  } else {
+    article.selectedCategory = catego
   }
 }
 
 function submit() {
-  authorization().then((resp) => {
-    if (resp[0]) {
-      // 需要传给后端的数据
-      let payload = {
+  authorization().then((response) => {
+    if (response[0]) {
+      let data = {
         title: article.title,
-        body: article.body_cont,
+        body: article.body,
+        category_id: article.selectedCategory ? article.selectedCategory.id : null,
         tags: article.tags
           .split(/[,，]/)
           .map((x) => x.trim())
-          .filter((x) => x.charAt(0) !== ""), // 去除空提交
-      }
-      // 添加分类
-      if (article.selectCategorie) {
-        payload.category_id = article.selectCategorie.id
+          .filter((x) => x.charAt(0) !== ""),
       }
 
       const token = localStorage.getItem("access.myblog")
-      sendPostReq("/article/", payload, { headers: { Authorization: "Bearer " + token } }).then(
-        (res) => {
-          router.push({ name: "ArticleDetail", params: { id: res.data.id } })
-        }
-      )
+      sendPutReq("/article/" + article.articleID + "/", data, {
+        headers: { Authorization: "Bearer " + token },
+      }).then((resp) => {
+        router.push({ name: "ArticleDetail", params: { id: resp.data.id } })
+      })
     } else {
       alert("令牌过期，请重新登录。")
-      router.push({ name: "Login" })
+      router.push({ name: "Home" })
+    }
+  })
+}
+
+function deleteArticle() {
+  const token = localStorage.getItem("access.myblog")
+  authorization().then((response) => {
+    if (response[0]) {
+      if (confirm("确定要删除该文章吗？")) {
+        sendDeleteReq("/article/" + article.articleID + "/", {
+          headers: { Authorization: "Bearer " + token },
+        }).then(() => router.push({ name: "Home" }))
+      }
+    } else {
+      alert("令牌过期，请重新登录。")
+      router.push({ name: "Home" })
     }
   })
 }
 </script>
 
 <style scoped>
-.tmp {
-  background-color: rgb(61, 179, 242);
-  color: white;
-}
-
 .category-btn {
   margin-right: 10px;
 }
-
 #article-create {
   text-align: center;
   font-size: large;
 }
-
 form {
   text-align: left;
   padding-left: 100px;

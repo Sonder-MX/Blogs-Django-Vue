@@ -11,6 +11,10 @@ export const sendPostReq = async (surl, payload, config_obj = "") => {
   return await axios.post(tagUrl + surl, payload, config_obj)
 }
 
+export const sendPutReq = async (surl, payload, config_obj) => {
+  return await axios.put(tagUrl + surl, payload, config_obj)
+}
+
 export const sendPatchReq = async (surl, payload, config_obj) => {
   return await axios.patch(tagUrl + surl, payload, config_obj)
 }
