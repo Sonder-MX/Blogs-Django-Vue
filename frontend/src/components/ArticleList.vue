@@ -1,6 +1,9 @@
 <template>
   <div id="articles" v-for="article in articleInfo.data.results" :key="article.url">
-    <div>
+    <div class="cate-tag">
+      <span v-if="article.category !== null" class="category">
+        {{ article.category.title }}
+      </span>
       <span class="tag" v-for="tag in article.tags" :key="tag">
         {{ tag }}
       </span>
@@ -27,7 +30,7 @@
 <script setup>
 import { onMounted, reactive, watch } from "vue"
 import { useRoute } from "vue-router"
-import { reqArticleListOrDetail } from "@/http"
+import { sendGetReq } from "@/http"
 
 const route = useRoute()
 let articleInfo = reactive({
@@ -50,7 +53,7 @@ function get_article_data() {
   if (paramsString.charAt(0) !== "") {
     url += "/?" + paramsString
   }
-  reqArticleListOrDetail(url)
+  sendGetReq(url)
     .then((resp) => {
       articleInfo.data = resp
     })
@@ -138,6 +141,20 @@ watch(route, () => get_article_data())
   background-color: #4e4e4e;
   color: whitesmoke;
   border-radius: 5px;
+}
+
+.category {
+  padding: 5px 10px 5px 10px;
+  margin: 5px 5px 5px 0;
+  font-family: Georgia, Arial, sans-serif;
+  font-size: small;
+  background-color: rgb(40, 30, 77);
+  color: whitesmoke;
+  border-radius: 15px;
+}
+
+.cate-tag {
+  padding: 8px 0;
 }
 
 #paginator {

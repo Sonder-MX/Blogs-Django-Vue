@@ -16,6 +16,9 @@
             <router-link :to="{ name: 'UserCenter', params: { username: userName } }">
               用户中心
             </router-link>
+            <router-link v-show="isSuperuser" :to="{ name: 'ArticleCreate' }">
+              发表文章</router-link
+            >
           </div>
         </div>
       </div>
@@ -34,6 +37,8 @@ import authorization from "@/utils/authorization"
 
 let userName = ref("")
 let hasLogin = ref(false)
+const isSuperuser = JSON.parse(localStorage.getItem("isSuperuser.myblog"))
+
 const props = defineProps(["welcomeName"])
 
 const uname = computed(() => {

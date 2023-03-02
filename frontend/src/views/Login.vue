@@ -55,7 +55,7 @@
 import BlogHeader from "@/components/BlogHeader.vue"
 import BlogFooter from "@/components/BlogFooter.vue"
 import { ref } from "vue"
-import { sendPostReq } from "@/http"
+import { sendPostReq, sendGetReq } from "@/http"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
@@ -76,7 +76,7 @@ function signup() {
       errorMsg.value = "两次密码不一致，请重新输入！"
       return
     }
-    sendPostReq("/user", { username: signupName.value, password: signupPwd.value })
+    sendPostReq("/user/", { username: signupName.value, password: signupPwd.value })
       .then((res) => {
         errorMsg.value = ""
         signupResponse.value = res.data
@@ -106,8 +106,11 @@ function signin() {
       storage.setItem("refresh.myblog", res.data.refresh)
       storage.setItem("expiredTime.myblog", expiredTime)
       storage.setItem("username.myblog", signinName.value)
-      // 路由跳转，登录成功后跳转到首页
-      router.push({ name: "Home" })
+      sendGetReq("/user/" + signinName.value + "/").then((resp) => {
+        storage.setItem("isSuperuser.myblog", resp.is_superuser)
+        // 路由跳转，登录成功后跳转到首页
+        router.push({ name: "Home" })
+      })
     })
     .catch((err) => {
       console.log(err.message)

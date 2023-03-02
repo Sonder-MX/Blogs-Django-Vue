@@ -22,7 +22,7 @@
 import BlogHeader from "@/components/BlogHeader.vue"
 import BlogFooter from "@/components/BlogFooter.vue"
 
-import { reqArticleListOrDetail } from "@/http"
+import { sendGetReq } from "@/http"
 import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
 
@@ -30,7 +30,7 @@ const route = useRoute()
 let article = ref(null)
 
 onMounted(() => {
-  reqArticleListOrDetail("/article/" + route.params.id)
+  sendGetReq("/article/" + route.params.id)
     .then((resp) => (article.value = resp))
     .catch((err) => console.log(err.message))
 })

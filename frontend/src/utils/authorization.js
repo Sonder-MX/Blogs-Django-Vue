@@ -1,4 +1,4 @@
-import { sendPostReq } from "@/http"
+import { sendPostReq, sendGetReq } from "@/http"
 
 async function authorization() {
   const storage = localStorage
@@ -21,6 +21,9 @@ async function authorization() {
       const nextExpiredTime = Date.now() + 60000 * 60
       storage.setItem("access.myblog", response.data.access)
       storage.setItem("expiredTime.myblog", nextExpiredTime)
+      sendGetReq("/user/" + userName + "/").then((resp) => {
+        storage.setItem("isSuperuser.myblog", resp.data.is_superuser)
+      })
       storage.removeItem("refresh.myblog")
 
       hasLogin = true

@@ -21,6 +21,11 @@ const routes = [
     name: "UserCenter",
     component: () => import("@/views/UserCenter.vue"),
   },
+  {
+    path: "/article/create",
+    name: "ArticleCreate",
+    component: () => import("@/views/ArticleCreate.vue"),
+  },
 ]
 
 const router = createRouter({
