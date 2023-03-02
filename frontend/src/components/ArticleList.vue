@@ -1,17 +1,26 @@
 <template>
   <div id="articles" v-for="article in articleInfo.data.results" :key="article.url">
-    <div class="cate-tag">
-      <span v-if="article.category !== null" class="category">
-        {{ article.category.title }}
-      </span>
-      <span class="tag" v-for="tag in article.tags" :key="tag">
-        {{ tag }}
-      </span>
+    <div class="grid" :style="gridStyle(article)">
+      <div class="image-container">
+        <img :src="imageIfExists(article)" alt="" class="image" />
+      </div>
+      <div>
+        <div class="cate-tag">
+          <span v-if="article.category !== null" class="category">
+            {{ article.category.title }}
+          </span>
+          <span class="tag" v-for="tag in article.tags" :key="tag">
+            {{ tag }}
+          </span>
+        </div>
+        <router-link
+          :to="{ name: 'ArticleDetail', params: { id: article.id } }"
+          class="article-title">
+          {{ article.title }}
+        </router-link>
+        <div>{{ formatted_time(article.created) }}</div>
+      </div>
     </div>
-    <router-link :to="{ name: 'ArticleDetail', params: { id: article.id } }" class="article-title">
-      {{ article.title }}
-    </router-link>
-    <div>{{ formatted_time(article.created) }}</div>
   </div>
 
   <div id="paginator">
@@ -116,6 +125,21 @@ function get_path(direction) {
   return url
 }
 
+function imageIfExists(article) {
+  if (article.avatar) {
+    return article.avatar.content
+  }
+}
+
+function gridStyle(article) {
+  if (article.avatar) {
+    return {
+      display: "grid",
+      gridTemplateColumns: "0.2fr 4fr",
+    }
+  }
+}
+
 // 监听
 watch(route, () => get_article_data())
 </script>
@@ -171,5 +195,19 @@ a {
   font-weight: bold;
   padding-left: 10px;
   padding-right: 10px;
+}
+
+.image {
+  width: 180px;
+  border-radius: 10px;
+  box-shadow: darkslategrey 0 0 12px;
+}
+
+.image-container {
+  width: 200px;
+}
+
+.grid {
+  padding-bottom: 10px;
 }
 </style>

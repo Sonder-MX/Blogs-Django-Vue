@@ -3,6 +3,12 @@
 
   <div id="article-create">
     <h3>发表文章</h3>
+    <form id="image_form">
+      <div class="form-elem">
+        <span>图片：</span>
+        <input v-on:change="onFileChange" type="file" accept="image/*" id="file" />
+      </div>
+    </form>
     <form>
       <div class="form-elem">
         <span>标题：</span>
@@ -58,6 +64,7 @@ let article = reactive({
   body_cont: "",
   categories: [],
   selectCategorie: null,
+  avatarID: null,
 })
 
 onMounted(() => {
@@ -84,11 +91,27 @@ function chooseCategory(catego) {
   }
 }
 
+function onFileChange(e) {
+  // 将文件二进制数据添加到提交数据中
+  const file = e.target.files[0]
+  let formData = new FormData()
+  formData.append("content", file)
+
+  // 略去鉴权和错误处理的部分
+  sendPostReq("/avatar/", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: "Bearer " + localStorage.getItem("access.myblog"),
+    },
+  }).then((resp) => (article.avatarID = resp.data.id))
+}
+
 function submit() {
   authorization().then((resp) => {
     if (resp[0]) {
       // 需要传给后端的数据
       let payload = {
+        avatar_id: article.avatarID,
         title: article.title,
         body: article.body_cont,
         tags: article.tags
