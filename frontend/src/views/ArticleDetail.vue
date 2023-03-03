@@ -1,47 +1,53 @@
 <template>
   <BlogHeader />
 
-  <div v-if="article !== null" class="grid-container">
+  <div v-if="art.article !== null" class="grid-container">
     <div>
-      <h1 id="title">{{ article.title }}</h1>
+      <h1 id="title">{{ art.article.title }}</h1>
       <p id="subtitle">
-        本文由 {{ article.author.username }} 发布于 {{ formatted_time(article.created) }}
+        本文由 {{ art.article.author.username }} 发布于 {{ formatted_time(art.article.created) }}
         <span v-show="isSuperUser">
-          <router-link :to="{ name: 'ArticleEdit', params: { id: article.id } }">
+          <router-link :to="{ name: 'ArticleEdit', params: { id: art.article.id } }">
             更新与删除
           </router-link>
         </span>
       </p>
-      <div v-html="article.body_html" class="article-body"></div>
+      <div v-html="art.article.body_html" class="article-body"></div>
     </div>
     <div>
       <h3>目录</h3>
-      <div v-html="article.toc_html" class="toc"></div>
+      <div v-html="art.article.toc_html" class="toc"></div>
     </div>
   </div>
+
+  <Comments :article="art.article" />
 
   <BlogFooter />
 </template>
 
 <script setup>
 import BlogHeader from "@/components/BlogHeader.vue"
+import Comments from "@/components/Comments.vue"
 import BlogFooter from "@/components/BlogFooter.vue"
 
 import { sendGetReq } from "@/http"
-import { ref, onMounted, computed } from "vue"
+import axios from "axios"
+import { onMounted, computed, reactive, onBeforeMount } from "vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
-let article = ref(null)
-
-const isSuperUser = computed(() => {
-  return localStorage.getItem("isSuperuser.myblog") === "true"
+let art = reactive({
+  article: null,
 })
 
 onMounted(() => {
   sendGetReq("/article/" + route.params.id)
-    .then((resp) => (article.value = resp))
+    .then((resp) => (art.article = resp))
     .catch((err) => console.log(err.message))
+})
+
+const isSuperUser = computed(() => {
+  return localStorage.getItem("isSuperuser.myblog") === "true"
 })
 
 const formatted_time = (iso_date_string) => {

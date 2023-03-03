@@ -32,7 +32,7 @@
 <script setup>
 import SearchBox from "./SearchBox.vue"
 
-import { ref, onMounted, defineProps, computed } from "vue"
+import { ref, onMounted, computed } from "vue"
 import authorization from "@/utils/authorization"
 
 let userName = ref("")
