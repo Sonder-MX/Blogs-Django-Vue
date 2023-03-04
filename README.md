@@ -6,7 +6,7 @@
 
 ## 预览
 
-
+![home](./images/home.jpg)
 
 ## 环境配置
 
