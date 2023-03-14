@@ -2,12 +2,11 @@ from rest_framework import viewsets
 
 from .filters import ArticleFilter
 # from rest_framework.permissions import IsAdminUser
-from .models import Article, Category, Tag, Avatar
+from .models import Article, Avatar, Category, Tag
 from .permissions import IsAdminUserOrReadOnly
-from .serializers import ArticleSerializer, ArticleDetailSerializer, \
-    CategorySerializer, CategoryDetailSerializer, \
-    TagSerializer, AvatarSerializer
-
+from .serializers import (ArticleDetailSerializer, ArticleSerializer,
+                          AvatarSerializer, CategoryDetailSerializer,
+                          CategorySerializer, TagSerializer)
 
 # class ArticleList(generics.ListCreateAPIView):
 #     queryset = Article.objects.all()
