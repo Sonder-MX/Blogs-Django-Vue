@@ -1,9 +1,8 @@
-from rest_framework import serializers
-
 from comment.serializers import CommentSeriallizer
+from rest_framework import serializers
 from user_info.serializers import UserDescSerializer
-from .models import Article, Category, Tag, Avatar
 
+from .models import Article, Avatar, Category, Tag
 
 # class ArticleListSerializer(serializers.ModelSerializer):
 #     # 实现超链接可以用 DRF 框架提供的 HyperlinkedIdentityField
@@ -20,6 +19,7 @@ from .models import Article, Category, Tag, Avatar
 #     class Meta:
 #         model = Article
 #         fields = '__all__'
+
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -66,12 +66,10 @@ class ArticleBaseSerializer(serializers.HyperlinkedModelSerializer):
     author = UserDescSerializer(read_only=True)
     # category 的嵌套序列化字段
     category = CategorySerializer(read_only=True)
-    tags = serializers.SlugRelatedField(
-        queryset=Tag.objects.all(),
-        many=True,
-        required=False,
-        slug_field='text'
-    )
+    tags = serializers.SlugRelatedField(queryset=Tag.objects.all(),
+                                        many=True,
+                                        required=False,
+                                        slug_field='text')
 
     # 覆写方法，如果输入的标签不存在则创建它
     def to_internal_value(self, data):
@@ -85,26 +83,29 @@ class ArticleBaseSerializer(serializers.HyperlinkedModelSerializer):
         return super().to_internal_value(data)
 
     # category 的 id 字段，用于创建/更新 category 外键
-    category_id = serializers.IntegerField(write_only=True, allow_null=True, required=False)
+    category_id = serializers.IntegerField(write_only=True,
+                                           allow_null=True,
+                                           required=False)
 
     # category_id 字段的验证器 400 error
     @staticmethod
     def validate_category_id(value):
-        if not Category.objects.filter(id=value).exists() and value is not None:
-            raise serializers.ValidationError(f"Category with id {value} not exists.")
+        if not Category.objects.filter(
+                id=value).exists() and value is not None:
+            raise serializers.ValidationError(
+                f"Category with id {value} not exists.")
         return value
 
     avatar = AvatarSerializer(read_only=True)
-    avatar_id = serializers.IntegerField(
-        write_only=True,
-        allow_null=True,
-        required=False
-    )
+    avatar_id = serializers.IntegerField(write_only=True,
+                                         allow_null=True,
+                                         required=False)
 
     @staticmethod
     def validate_avatar_id(value):
         if not Avatar.objects.filter(id=value).exists() and value is not None:
-            raise serializers.ValidationError(f'Avatar with id {value} not exists!')
+            raise serializers.ValidationError(
+                f'Avatar with id {value} not exists!')
         return value
 
 
