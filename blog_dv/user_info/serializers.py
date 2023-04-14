@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 
 class UserDescSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
         fields = ['id', 'username', 'last_login', 'date_joined']
@@ -13,17 +14,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = [
-            'url',
-            'id',
-            'username',
-            'password',
-            'is_superuser'
-        ]
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'is_superuser': {'read_only': True}
-        }
+        fields = ['url', 'id', 'username', 'password', 'is_superuser']
+        extra_kwargs = {'password': {'write_only': True}, 'is_superuser': {'read_only': True}}
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
@@ -37,14 +29,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
-        fields = [
-            'id',
-            'username',
-            'last_name',
-            'first_name',
-            'email',
-            'last_login',
-            'date_joined'
-        ]
+        fields = ['id', 'username', 'last_name', 'first_name', 'email', 'last_login', 'date_joined']
