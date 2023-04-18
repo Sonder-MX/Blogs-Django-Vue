@@ -4,8 +4,7 @@ from .filters import ArticleFilter
 # from rest_framework.permissions import IsAdminUser
 from .models import Article, Avatar, Category, Tag
 from .permissions import IsAdminUserOrReadOnly
-from .serializers import (ArticleDetailSerializer, ArticleSerializer,
-                          AvatarSerializer, CategoryDetailSerializer,
+from .serializers import (ArticleDetailSerializer, ArticleSerializer, AvatarSerializer, CategoryDetailSerializer,
                           CategorySerializer, TagSerializer)
 
 # class ArticleList(generics.ListCreateAPIView):
