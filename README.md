@@ -17,7 +17,7 @@
 	- pip install django-cors-headers==3.13.0
 	- pip install markdown==3.4.1
 	- pip install django-filter==22.1
-	- pip install jangorestframework-simplejwt==5.2.2
+	- pip install djangorestframework-simplejwt==5.2.2
 
 2. [安装nodejs](https://nodejs.org/en/) (version == 18.14.0)
 
