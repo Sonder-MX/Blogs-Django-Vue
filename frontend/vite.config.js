@@ -6,7 +6,7 @@ import { defineConfig } from "vite"
 export default defineConfig({
   plugins: [vue()],
   server: {
-    port: 8080,
+    port: 9000,
   },
   resolve: {
     alias: {
