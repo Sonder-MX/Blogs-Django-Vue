@@ -1,8 +1,8 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
 class IsOwnerOrReader(BasePermission):
-    message = '你必须是发布者才可以修改！'
+    message = "你必须是发布者才可以修改！"
 
     @staticmethod
     def safe_methods_or_owner(request, func):
@@ -13,13 +13,9 @@ class IsOwnerOrReader(BasePermission):
     def has_permission(self, request, view):
         """登录验证"""
         return self.safe_methods_or_owner(
-            request,
-            lambda: request.user.is_authenticated
+            request, lambda: request.user.is_authenticated
         )
 
     def has_object_permission(self, request, view, obj):
         """obj为评论模型的实例，执行晚于视图集中perform_create()方法"""
-        return self.safe_methods_or_owner(
-            request,
-            lambda: obj.author == request.user
-        )
+        return self.safe_methods_or_owner(request, lambda: obj.author == request.user)

@@ -5,23 +5,23 @@ from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from .permissions import IsSelfOrReadOnly
-from .serializers import UserRegisterSerializer, UserDetailSerializer
+from .serializers import UserDetailSerializer, UserRegisterSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
-    lookup_field = 'username'
+    lookup_field = "username"
 
     def get_permissions(self):
-        if self.request.method == 'POST':
+        if self.request.method == "POST":
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticatedOrReadOnly, IsSelfOrReadOnly]
 
         return super().get_permissions()
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
     def info(self, request, username=None):
         queryset = User.objects.get(username=username)
         serializer = UserDetailSerializer(queryset, many=False)
@@ -29,7 +29,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False)
     def sorted(self, request):
-        users = User.objects.all().order_by('-username')
+        users = User.objects.all().order_by("-username")
 
         page = self.paginate_queryset(users)
         if page is not None:

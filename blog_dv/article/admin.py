@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Article, Category, Tag, Avatar
+from .models import Article, Avatar, Category, Tag
 
 # Register your models here.
 # user name: admin
